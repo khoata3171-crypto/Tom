@@ -675,6 +675,15 @@
 </div>
 </div>
 </div></main></div><script>
+document.querySelector('select')?.addEventListener('change', (event) => {
+  const matchPages = {
+    'BRA-JPN': 'trangconbraziljapan.html',
+    'FRA-URU': 'trangconfranceuruguray.html',
+  };
+  const page = matchPages[event.currentTarget.value];
+  if (page) window.location.href = page;
+});
+
 (() => {
   const input = document.querySelector('input[placeholder="Tìm trang: đội tuyển, cầu thủ, trận đấu, xếp hạng..."]');
   if (!input) return;
