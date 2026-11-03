@@ -25,7 +25,7 @@
 <div class="flex items-center bg-surface-container border border-outline-variant/50 px-space-sm py-1 rounded-sm">
 <span class="font-label-caps text-label-caps text-on-surface-variant uppercase mr-2 hidden sm:inline">CHỌN TRẬN ĐẤU:</span>
 <span class="material-symbols-outlined text-primary text-[16px] mr-1.5">sports_soccer</span>
-<select class="bg-transparent text-on-surface font-stat-mono-sm text-stat-mono-sm focus:outline-none cursor-pointer">
+<select id="match-selector" class="bg-transparent text-on-surface font-stat-mono-sm text-stat-mono-sm focus:outline-none cursor-pointer">
 <option selected="" value="bra-jpn">BRA 3 - 0 JPN (Vòng 32 • FT)</option>
 <option value="esp-ger">ESP 2 - 1 GER (Bảng E • FT)</option>
 <option value="fra-uru">FRA 2 - 1 URU (Vòng 32 • FT)</option>
@@ -704,6 +704,16 @@ Cơ hội nguy hiểm bỏ lỡ - Nhật Bản: <strong class="font-semibold tex
 </div>
 </div>
 </div></main></div><script>
+document.getElementById('match-selector')?.addEventListener('change', (event) => {
+  const matchPages = {
+    'bra-jpn': 'trangconbraziljapan.html',
+    'fra-uru': 'trangconfranceuruguray.html',
+    'esp-ger': 'thongkechitiettrandau.html',
+  };
+  const page = matchPages[event.currentTarget.value];
+  if (page) window.location.href = page;
+});
+
 (() => {
   const input = document.querySelector('input[placeholder="Tìm trang: đội tuyển, cầu thủ, trận đấu, xếp hạng..."]');
   if (!input) return;

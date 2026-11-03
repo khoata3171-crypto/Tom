@@ -26,7 +26,7 @@
 </div>
 <span class="font-label-caps text-label-caps text-on-surface-variant hidden sm:inline">CHỌN TRẬN ĐẤU:</span>
 <div class="relative inline-flex items-center bg-surface-container-high rounded px-space-sm py-1 border border-outline-variant/50">
-<select class="bg-transparent text-primary font-stat-mono-sm text-stat-mono-sm focus:outline-none cursor-pointer pr-5">
+<select id="match-selector" class="bg-transparent text-primary font-stat-mono-sm text-stat-mono-sm focus:outline-none cursor-pointer pr-5">
 <option class="bg-surface-container-high text-on-surface" selected="" value="ESP-GER">ESP 2 - 1 GER (Bảng E • FT)</option>
 <option class="bg-surface-container-high text-on-surface" value="USA-ENG">USA 1 - 1 ENG (Bảng B • FT)</option>
 <option class="bg-surface-container-high text-on-surface" value="ARG-FRA">ARG 3 - 2 FRA (Bảng C • FT)</option>
@@ -675,14 +675,17 @@
 </div>
 </div>
 </div></main></div><script>
-document.querySelector('select')?.addEventListener('change', (event) => {
-  const matchPages = {
-    'BRA-JPN': 'trangconbraziljapan.html',
-    'FRA-URU': 'trangconfranceuruguray.html',
-  };
-  const page = matchPages[event.currentTarget.value];
-  if (page) window.location.href = page;
-});
+const matchPages = {
+  'BRA-JPN': 'trangconbraziljapan.html',
+  'FRA-URU': 'trangconfranceuruguray.html',
+};
+const matchSelector = document.getElementById('match-selector');
+if (matchSelector instanceof HTMLSelectElement) {
+  matchSelector.addEventListener('change', () => {
+    const page = matchPages[matchSelector.value];
+    if (page) window.location.href = page;
+  });
+}
 
 (() => {
   const input = document.querySelector('input[placeholder="Tìm trang: đội tuyển, cầu thủ, trận đấu, xếp hạng..."]');

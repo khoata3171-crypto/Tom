@@ -599,12 +599,15 @@ POTM #10
 </div>
 </div></main></div>
 <script>
-    document.getElementById('match-selector')?.addEventListener('change', function(e) {
-      const selected = e.target.value;
-      if (selected !== 'fra-uru') {
-        console.log('Navigating to telemetry report:', selected);
-      }
-    });
+const matchPages = {
+  'fra-uru': 'trangconfranceuruguray.html',
+  'bra-jpn': 'trangconbraziljapan.html',
+  'esp-ger': 'thongkechitiettrandau.html',
+};
+document.getElementById('match-selector')?.addEventListener('change', (event) => {
+  const page = matchPages[event.currentTarget.value];
+  if (page) window.location.href = page;
+});
 </script>
 
 
