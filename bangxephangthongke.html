@@ -95,7 +95,7 @@
 <!-- Group Stage Grid -->
 <div class="grid grid-cols-1 xl:grid-cols-2 gap-space-lg">
 <!-- BẢNG A -->
-<div class="group-card bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm shadow-sm" data-confeds="CONCACAF,UEFA,CAF,AFC">
+<div class="group-card bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm shadow-sm" data-airtable-group="A" data-confeds="CONCACAF,UEFA,CAF,AFC">
 <div class="flex items-center justify-between">
 <div class="flex items-center gap-space-sm">
 <span class="px-space-sm py-0.5 rounded bg-primary/10 text-primary font-headline-sm text-headline-sm">BẢNG A</span>
@@ -117,7 +117,7 @@
 <th class="py-2.5 px-space-xs text-center">BB</th>
 <th class="py-2.5 px-space-xs text-center">HS</th>
 <th class="py-2.5 px-space-sm text-center font-bold text-primary">Đ</th>
-<th class="py-2.5 px-space-sm text-right rounded-r">Phong độ</th>
+<th class="py-2.5 px-space-sm text-center rounded-r">Phong độ</th>
 </tr>
 </thead>
 <tbody>
@@ -218,7 +218,7 @@
 </div>
 </div>
 <!-- BẢNG B -->
-<div class="group-card bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm shadow-sm" data-confeds="CONCACAF,UEFA,AFC">
+<div class="group-card bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm shadow-sm" data-airtable-group="B" data-confeds="CONCACAF,UEFA,AFC">
 <div class="flex items-center justify-between">
 <div class="flex items-center gap-space-sm">
 <span class="px-space-sm py-0.5 rounded bg-primary/10 text-primary font-headline-sm text-headline-sm">BẢNG B</span>
@@ -240,7 +240,7 @@
 <th class="py-2.5 px-space-xs text-center">BB</th>
 <th class="py-2.5 px-space-xs text-center">HS</th>
 <th class="py-2.5 px-space-sm text-center font-bold text-primary">Đ</th>
-<th class="py-2.5 px-space-sm text-right rounded-r">Phong độ</th>
+<th class="py-2.5 px-space-sm text-center rounded-r">Phong độ</th>
 </tr>
 </thead>
 <tbody>
@@ -341,7 +341,7 @@
 </div>
 </div>
 <!-- BẢNG C -->
-<div class="group-card bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm shadow-sm" data-confeds="CONCACAF,CONMEBOL,UEFA,CAF">
+<div class="group-card bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm shadow-sm" data-airtable-group="C" data-confeds="CONCACAF,CONMEBOL,UEFA,CAF">
 <div class="flex items-center justify-between">
 <div class="flex items-center gap-space-sm">
 <span class="px-space-sm py-0.5 rounded bg-primary/10 text-primary font-headline-sm text-headline-sm">BẢNG C</span>
@@ -363,7 +363,7 @@
 <th class="py-2.5 px-space-xs text-center">BB</th>
 <th class="py-2.5 px-space-xs text-center">HS</th>
 <th class="py-2.5 px-space-sm text-center font-bold text-primary">Đ</th>
-<th class="py-2.5 px-space-sm text-right rounded-r">Phong độ</th>
+<th class="py-2.5 px-space-sm text-center rounded-r">Phong độ</th>
 </tr>
 </thead>
 <tbody>
@@ -464,7 +464,7 @@
 </div>
 </div>
 <!-- BẢNG D -->
-<div class="group-card bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm shadow-sm" data-confeds="CONCACAF,UEFA,CONMEBOL,AFC">
+<div class="group-card bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm shadow-sm" data-airtable-group="D" data-confeds="CONCACAF,UEFA,CONMEBOL,AFC">
 <div class="flex items-center justify-between">
 <div class="flex items-center gap-space-sm">
 <span class="px-space-sm py-0.5 rounded bg-primary/10 text-primary font-headline-sm text-headline-sm">BẢNG D</span>
@@ -486,7 +486,7 @@
 <th class="py-2.5 px-space-xs text-center">BB</th>
 <th class="py-2.5 px-space-xs text-center">HS</th>
 <th class="py-2.5 px-space-sm text-center font-bold text-primary">Đ</th>
-<th class="py-2.5 px-space-sm text-right rounded-r">Phong độ</th>
+<th class="py-2.5 px-space-sm text-center rounded-r">Phong độ</th>
 </tr>
 </thead>
 <tbody>
@@ -587,6 +587,7 @@
 </div>
 </div>
 </div>
+<p id="groupAirtableStatus" class="font-body-sm text-body-sm text-on-surface-variant" role="status" aria-live="polite">Đang tải dữ liệu bảng A–D...</p>
 <!-- Quick Index of Groups E to L Notice -->
 <div class="p-space-md bg-surface-container rounded-xl flex flex-col md:flex-row items-center justify-between gap-space-md">
 <div class="flex items-center gap-space-md">
@@ -1229,6 +1230,256 @@
 </div>
 </div>
 </div>
+<script>
+(() => {
+  const TOKEN = "";
+  const BASE_ID = "appYovEGrIzt1NAJ6";
+  const TABLE = "Thống kê đội tuyển";
+  const status = document.getElementById("groupAirtableStatus");
+  const groupCards = new Map(
+    Array.from(document.querySelectorAll("[data-airtable-group]"))
+      .map((card) => [card.dataset.airtableGroup, card]),
+  );
+
+  const normalize = (value) => String(value)
+    .toLocaleLowerCase("vi")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .trim();
+
+  const formatValue = (value) => {
+    if (value == null || value === "") return "";
+    if (Array.isArray(value)) {
+      return value.map(formatValue).filter(Boolean).join(", ");
+    }
+    if (typeof value === "object") {
+      if (value.state === "error" || value.errorType) return "";
+      if (typeof value.name === "string") return value.name;
+      if (typeof value.filename === "string") return value.filename;
+      return "";
+    }
+    return String(value).trim();
+  };
+
+  const groupLetter = (value) => {
+    const match = normalize(value).match(/^(?:(?:bang|group)\s*)?([a-d])$/);
+    return match ? match[1].toUpperCase() : "";
+  };
+
+  async function fetchAll() {
+    let records = [];
+    let offset = "";
+
+    if (!TOKEN) {
+      throw new Error("Chưa cấu hình API trung gian Airtable. Không đặt Personal Access Token trong mã chạy ở trình duyệt.");
+    }
+
+    do {
+      const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE)}` +
+        (offset ? `?offset=${encodeURIComponent(offset)}` : "");
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${TOKEN}` },
+      });
+      if (!response.ok) throw new Error(`Lỗi Airtable: ${response.status}`);
+
+      const data = await response.json();
+      records = records.concat(data.records);
+      offset = data.offset || "";
+    } while (offset);
+
+    return records;
+  }
+
+  const getFieldForColumn = (fields, column) => {
+    const columnKey = normalize(column);
+    const fieldNames = Object.keys(fields);
+    const exactField = fieldNames.find((field) => normalize(field) === columnKey);
+    if (exactField) return exactField;
+
+    const aliases = {
+      "#": ["#", "hang", "rank", "position"],
+      "doi tuyen": ["doi tuyen", "team", "country", "ten doi"],
+      "st": ["so tran", "matches played", "played"],
+      "t": ["thang", "won", "wins"],
+      "h": ["hoa", "drawn", "draws"],
+      "b": ["bai", "thua", "lost", "losses"],
+      "bt": ["ban thang", "goals for", "gf"],
+      "bb": ["ban thua", "goals against", "ga"],
+      "hs": ["hieu so", "goal difference", "gd"],
+      "d": ["diem", "points", "pts"],
+      "phong do": ["phong do", "form"],
+    };
+    const candidates = aliases[columnKey] || [columnKey];
+    return fieldNames.find((field) => candidates.includes(normalize(field)));
+  };
+
+  const setFormBadges = (cell, value) => {
+    cell.replaceChildren();
+    const container = document.createElement("div");
+    container.className = "flex flex-nowrap items-center justify-center gap-0.5 whitespace-nowrap";
+    container.style.minWidth = "7rem";
+    parseFormResults(value).forEach((result) => {
+      const badge = document.createElement("span");
+      badge.className = "w-4 h-4 shrink-0 rounded flex items-center justify-center text-[10px] font-bold";
+      if (result === "W") {
+        badge.classList.add("bg-secondary/20", "text-secondary");
+      } else if (result === "L") {
+        badge.classList.add("bg-error/20", "text-error");
+      } else {
+        badge.classList.add("bg-tertiary-container/30", "text-on-surface");
+      }
+      badge.textContent = result;
+      container.appendChild(badge);
+    });
+    cell.appendChild(container);
+  };
+
+  const parseFormResults = (value) => {
+    if (value == null || (typeof value === "string" && !value.trim())) return [];
+    if (Array.isArray(value)) return value.flatMap(parseFormResults);
+    if (typeof value === "object") {
+      if (value.state === "error" || value.errorType) return [];
+      if (value.name != null) return parseFormResults(value.name);
+      if (value.value != null) return parseFormResults(value.value);
+      return [];
+    }
+
+    const rawForm = normalize(String(value));
+    const tokens = rawForm.split(/[,\s;|/\\\-–—]+/).filter(Boolean);
+    const resultMap = {
+      w: "W", win: "W", wins: "W", won: "W", t: "W", thang: "W",
+      d: "D", draw: "D", draws: "D", drawn: "D", h: "D", hoa: "D",
+      l: "L", loss: "L", losses: "L", lost: "L", b: "L", bai: "L", thua: "L",
+    };
+    return tokens.flatMap((token) => {
+      if (resultMap[token]) return [resultMap[token]];
+      return token.match(/^[wdl]+$/) ? token.toUpperCase().split("") : [];
+    });
+  };
+
+  const renderTeamCell = (cell, teamName, fields) => {
+    const confedField = Object.keys(fields).find((field) =>
+      ["confederation", "confed", "lien doan"].includes(normalize(field)),
+    );
+    cell.replaceChildren();
+
+    const dot = document.createElement("span");
+    dot.className = "w-2.5 h-2.5 rounded-full bg-secondary-container";
+    dot.setAttribute("aria-hidden", "true");
+
+    const name = document.createElement("span");
+    name.textContent = teamName;
+    cell.append(dot, name);
+
+    if (confedField) {
+      const confed = formatValue(fields[confedField]);
+      if (confed) {
+        const label = document.createElement("span");
+        label.className = "font-label-caps text-[10px] text-on-surface-variant";
+        label.textContent = confed;
+        cell.appendChild(label);
+      }
+    }
+  };
+
+  const renderGroup = (letter, records) => {
+    const card = groupCards.get(letter);
+    const table = card.querySelector("table");
+    const headers = Array.from(table.querySelectorAll("thead th"))
+      .map((header) => header.textContent.trim());
+    const tbody = table.querySelector("tbody");
+    const rows = document.createDocumentFragment();
+
+    records.sort((first, second) => {
+      const rankField = (record) => getFieldForColumn(record.fields, "#");
+      const firstRankField = rankField(first);
+      const secondRankField = rankField(second);
+      const firstRank = firstRankField ? Number(first.fields[firstRankField]) : NaN;
+      const secondRank = secondRankField ? Number(second.fields[secondRankField]) : NaN;
+
+      if (Number.isFinite(firstRank) || Number.isFinite(secondRank)) {
+        return (Number.isFinite(firstRank) ? firstRank : Number.MAX_SAFE_INTEGER)
+          - (Number.isFinite(secondRank) ? secondRank : Number.MAX_SAFE_INTEGER);
+      }
+
+      const numericValue = (record, header) => {
+        const field = getFieldForColumn(record.fields, header);
+        const value = field ? Number(record.fields[field]) : NaN;
+        return Number.isFinite(value) ? value : 0;
+      };
+      return numericValue(second, "Đ") - numericValue(first, "Đ")
+        || numericValue(second, "HS") - numericValue(first, "HS")
+        || numericValue(second, "BT") - numericValue(first, "BT");
+    });
+
+    records.forEach((record, rowIndex) => {
+      const tr = document.createElement("tr");
+      tr.className = rowIndex % 2 === 0
+        ? "bg-surface-container/60 hover:bg-surface-container-high transition-colors"
+        : "bg-surface-container/30 hover:bg-surface-container-high transition-colors";
+
+      headers.forEach((header) => {
+        const field = getFieldForColumn(record.fields, header);
+        const value = field ? record.fields[field] : "";
+        const td = document.createElement("td");
+        td.className = "py-2.5 px-space-sm font-stat-mono-sm";
+
+        if (normalize(header) === "doi tuyen") {
+          td.className = "py-2.5 px-space-sm font-semibold text-on-surface flex items-center gap-space-xs";
+          renderTeamCell(td, formatValue(value), record.fields);
+        } else if (normalize(header) === "phong do") {
+          td.className = "py-2.5 px-space-sm text-center whitespace-nowrap align-middle";
+          td.style.width = "7rem";
+          setFormBadges(td, value);
+        } else {
+          td.textContent = formatValue(value) || (
+            header === "#" ? String(rowIndex + 1) : ""
+          );
+          if (header === "#") td.classList.add("text-secondary", "font-bold");
+          if (header === "Đ") td.classList.add("text-center", "font-bold", "text-primary");
+          if (["ST", "T", "H", "B", "BT", "BB", "HS"].includes(header)) {
+            td.classList.add("text-center");
+          }
+        }
+
+        tr.appendChild(td);
+      });
+      rows.appendChild(tr);
+    });
+
+    tbody.replaceChildren(rows);
+  };
+
+  fetchAll().then((records) => {
+    const recordsByGroup = new Map(["A", "B", "C", "D"].map((letter) => [letter, []]));
+    let groupFieldFound = false;
+
+    records.forEach((record) => {
+      const groupField = Object.keys(record.fields).find((field) =>
+        ["group", "bang", "bang dau", "group name"].includes(normalize(field)),
+      );
+      if (!groupField) return;
+      groupFieldFound = true;
+
+      const letter = groupLetter(formatValue(record.fields[groupField]));
+      if (recordsByGroup.has(letter)) recordsByGroup.get(letter).push(record);
+    });
+
+    if (!groupFieldFound) {
+      throw new Error("Không tìm thấy trường xác định bảng đấu (ví dụ: Bảng hoặc Group).");
+    }
+
+    recordsByGroup.forEach((groupRecords, letter) => renderGroup(letter, groupRecords));
+    const counts = [...recordsByGroup].map(([letter, groupRecords]) => `${letter}: ${groupRecords.length}`).join(" · ");
+    status.textContent = `Đã tải dữ liệu Airtable — ${counts} đội.`;
+  }).catch((error) => {
+    console.error(error);
+    status.textContent = error.message || "Không tải được dữ liệu Airtable.";
+    status.classList.add("text-error");
+  });
+})();
+</script>
 <script>
   // Tab Switching Logic
   const tabButtons = document.querySelectorAll('.tab-btn');
